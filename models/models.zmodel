@@ -1,0 +1,245 @@
+enum UserStatus {
+    INVITED
+    VERIFIED
+}
+
+model User {
+    id                  String               @id @default(uuid())
+    name                String?
+    email               String?              @unique
+    pictureUrl          String?              @default('https://i.imgur.com/ZdJSK3Y.jpeg')
+    tokenInvitation     String?
+
+    status              UserStatus           @default(VERIFIED)
+
+    // this is the role of the user for the application
+    globalRole          String               @default('USER')
+    password            String?              @password @omit
+    createdAt           DateTime             @default(now())
+    updatedAt           DateTime             @updatedAt @default(now())
+
+    organizationRoles   OrganizationRole[]
+
+    tripMembers         TripMember[]         @relation("user")
+    expenses            Expense[]            @relation("user")
+    preferences         Preference[]         @relation("user")
+    journals            Journal[]            @relation("user")
+    preferenceTemplates PreferenceTemplate[] @relation("user")
+
+    @@auth()
+    @@allow("all", auth().id == this.id)
+    @@allow('all', auth().globalRole == 'ADMIN')
+
+    //we only allow that user to register if they don't create an admin role
+    @@allow("create", globalRole != 'ADMIN')
+    @@allow("read", true)
+}
+
+model Trip {
+
+    id                 String         @id @default(uuid())
+    name               String
+    startDate          String?
+    endDate            String?
+    destination        String?
+    source             String?
+    type               String?
+    status             String?
+    budget             String?
+    transportationType String?
+
+    travelPreferences  String?
+    stayType           String?
+    averageAge         String?
+    interests          String?
+    activityLevel      String?
+    totalPeople        String?
+
+    organizationId     String
+    organization       Organization?  @relation(fields: [organizationId], references: [id], name: "organization", onDelete: Cascade)
+
+    tripMembers        TripMember[]   @relation("trip")
+    tripActivitys      TripActivity[] @relation("trip")
+    expenses           Expense[]      @relation("trip")
+    journals           Journal[]      @relation("trip")
+    documents          Document[]     @relation("trip")
+    documentAlerts     String[]       @default([])
+    createdAt          DateTime       @default(now())
+    updatedAt          DateTime       @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model TripMember {
+
+    id        String   @id @default(uuid())
+    role      String
+
+    tripId    String
+    trip      Trip?    @relation(fields: [tripId], references: [id], name: "trip", onDelete: Cascade)
+    userId    String
+    user      User?    @relation(fields: [userId], references: [id], name: "user")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model TripActivity {
+
+    id        String   @id @default(uuid())
+    type      String?
+    name      String
+    status    String?
+    date      String?
+    location  String?
+    cost      String?
+
+    tripId    String
+    trip      Trip?    @relation(fields: [tripId], references: [id], name: "trip", onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Expense {
+
+    id          String   @id @default(uuid())
+    amount      String
+    category    String?
+    description String?
+    date        String?
+
+    tripId      String
+    trip        Trip?    @relation(fields: [tripId], references: [id], name: "trip", onDelete: Cascade)
+    userId      String
+    user        User?    @relation(fields: [userId], references: [id], name: "user")
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Preference {
+
+    id                        String        @id @default(uuid())
+    travelStyle               String?
+    dietaryRestrictions       String?
+    accommodationType         String?
+    activityPreferences       String?
+    budgetRange               String?
+    travelDuration            String?
+    preferredDestinations     String?
+    climatePreferences        String?
+    travelCompanions          String?
+    accessibilityRequirements String?
+    transportationPreferences String?
+    travelGoals               String?
+    activityIntensity         String?
+    specialEvents             String?
+    languagesSpoken           String?
+    petPreferences            String?
+    passportCountry           String?
+    passportExpiry            String?
+    visaType                  String?
+    visaExpiry                String?
+
+    userId                    String
+    user                      User?         @relation(fields: [userId], references: [id], name: "user")
+    organizationId            String
+    organization              Organization? @relation(fields: [organizationId], references: [id], name: "organization")
+
+    createdAt                 DateTime      @default(now())
+    updatedAt                 DateTime      @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Journal {
+
+    id        String   @id @default(uuid())
+    title     String
+    content   String?
+    location  String?
+    mood      String?
+
+    tripId    String
+    trip      Trip?    @relation(fields: [tripId], references: [id], name: "trip", onDelete: Cascade)
+    userId    String
+    user      User?    @relation(fields: [userId], references: [id], name: "user")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Document {
+
+    id        String   @id @default(uuid())
+    type      String?
+    name      String?
+    url       String?
+
+    tripId    String
+    trip      Trip?    @relation(fields: [tripId], references: [id], name: "trip", onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Organization {
+    id                  String               @id @default(uuid())
+    name                String
+    pictureUrl          String?              @default('https://i.imgur.com/BgkFiid.jpeg')
+
+    createdAt           DateTime             @default(now())
+    updatedAt           DateTime             @updatedAt @default(now())
+    roles               OrganizationRole[]
+
+    trips               Trip[]               @relation("organization")
+    preferences         Preference[]         @relation("organization")
+    preferenceTemplates PreferenceTemplate[] @relation("organization")
+
+    @@allow('all', auth().globalRole == 'ADMIN')
+    @@allow('all', roles?[user == auth() && name == 'owner'])
+    @@allow('read', roles?[user == auth()])
+}
+
+model OrganizationRole {
+    id             String       @id @default(uuid())
+    name           String
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt @default(now())
+
+    userId         String       @default(auth().id)
+    user           User         @relation(fields: [userId], references: [id])
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@allow('all', auth().globalRole == 'ADMIN')
+    @@allow('all', organization.roles?[user == auth() && name == 'owner'])
+    @@allow('create', organization.roles?[user == auth()] && name != 'owner')
+    @@allow('read', organization.roles?[user == auth()])
+    @@allow('delete', auth() == user)
+}
+
+model PreferenceTemplate {
+    id                  String        @id @default(uuid())
+    name                String        @unique
+    travelStyle         String?
+    dietaryRestrictions String?
+    accommodationType   String?
+    activityPreferences String?
+    budgetRange         String?
+
+    userId              String
+    user                User?         @relation(fields: [userId], references: [id], name: "user")
+    organizationId      String
+    organization        Organization? @relation(fields: [organizationId], references: [id], name: "organization")
+
+    createdAt           DateTime      @default(now())
+    updatedAt           DateTime      @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+            
