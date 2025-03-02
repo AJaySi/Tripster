@@ -238,42 +238,7 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(typescript@5.6.2)(vite@5.4.7(@types/node@22.6.1)(sass-embedded@1.79.3)(sass@1.79.4)(terser@5.36.0))
 
-  docs:
-    dependencies:
-      '@docusaurus/core':
-        specifier: 3.6.0
-        version: 3.6.0(@docusaurus/types@3.6.0(acorn@8.12.1)(esbuild@0.24.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mdx-js/react@3.1.0(@types/react@18.3.1)(react@18.3.1))(acorn@8.12.1)(esbuild@0.24.0)(eslint@8.57.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.2)
-      '@docusaurus/preset-classic':
-        specifier: 3.6.0
-        version: 3.6.0(@algolia/client-search@5.13.0)(@mdx-js/react@3.1.0(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(acorn@8.12.1)(esbuild@0.24.0)(eslint@8.57.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.2)(typescript@5.6.2)
-      '@mdx-js/react':
-        specifier: ^3.0.0
-        version: 3.1.0(@types/react@18.3.1)(react@18.3.1)
-      clsx:
-        specifier: ^2.0.0
-        version: 2.1.1
-      prism-react-renderer:
-        specifier: ^2.3.0
-        version: 2.4.0(react@18.3.1)
-      react:
-        specifier: ^18.0.0
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.0.0
-        version: 18.3.1(react@18.3.1)
-    devDependencies:
-      '@docusaurus/module-type-aliases':
-        specifier: 3.6.0
-        version: 3.6.0(acorn@8.12.1)(esbuild@0.24.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@docusaurus/tsconfig':
-        specifier: 3.6.0
-        version: 3.6.0
-      '@docusaurus/types':
-        specifier: 3.6.0
-        version: 3.6.0(acorn@8.12.1)(esbuild@0.24.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      typescript:
-        specifier: ~5.6.2
-        version: 5.6.2
+  
 
 packages:
 
